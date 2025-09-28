@@ -8,51 +8,54 @@
 </head>
 <body>
   <div class="container">
-    <h1>Reddit Copilot</h1>
-    <p>Find the best subreddits for your interests.</p>
-    <form id="interest-form">
-      <input type="text" id="interests" placeholder="Enter interests (e.g., fitness, javascript)" required>
-      <div class="filters">
-        <div class="filter-group">
-          <label for="nsfw">NSFW</label>
-          <select id="nsfw">
-            <option value="exclude" selected>Exclude</option>
-            <option value="include">Include</option>
-            <option value="only">Only</option>
-          </select>
+    <div class="left-section">
+      <h1>Reddit Copilot</h1>
+      <p>Find the best subreddits for your interests.</p>
+      <form id="interest-form">
+        <input type="text" id="interests" placeholder="Enter interests (e.g., fitness, javascript)" required>
+        <div class="filters">
+          <div class="filter-group">
+            <label for="nsfw">NSFW</label>
+            <select id="nsfw">
+              <option value="exclude" selected>Exclude</option>
+              <option value="include">Include</option>
+              <option value="only">Only</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="min_subscribers">Min Subscribers</label>
+            <input type="number" id="min_subscribers" value="1000" min="0">
+          </div>
+          <div class="filter-group">
+            <label for="sort">Sort By</label>
+            <select id="sort">
+              <option value="hybrid" selected>Hybrid</option>
+              <option value="relevance">Relevance</option>
+              <option value="subscribers">Subscribers</option>
+              <option value="activity">Activity</option>
+            </select>
+          </div>
         </div>
-        <div class="filter-group">
-          <label for="min_subscribers">Min Subscribers</label>
-          <input type="number" id="min_subscribers" value="1000" min="0">
-        </div>
-        <div class="filter-group">
-          <label for="sort">Sort By</label>
-          <select id="sort">
-            <option value="hybrid" selected>Hybrid</option>
-            <option value="relevance">Relevance</option>
-            <option value="subscribers">Subscribers</option>
-            <option value="activity">Activity</option>
-          </select>
-        </div>
+        <button type="submit">Find Subreddits</button>
+      </form>
+      <div id="results-container" class="hidden">
+        <h2>Results</h2>
+        <div id="results"></div>
       </div>
-      <button type="submit">Find Subreddits</button>
-    </form>
-    <div id="results-container" class="hidden">
-      <h2>Results</h2>
-      <div id="results"></div>
+    </div>
+    <div class="right-section">
+      <h2>Get Top 5 Posts from a Subreddit</h2>
+      <form id="top-posts-form">
+        <input type="text" id="subreddit-name" placeholder="Enter subreddit name (e.g., javascript)" required>
+        <button type="submit">Get Top Posts</button>
+      </form>
+      <div id="posts-container" class="hidden">
+        <h3>Top Posts</h3>
+        <div id="posts"></div>
+      </div>
     </div>
     <div id="loading" class="hidden">
       <div class="spinner"></div>
-    </div>
-
-    <h2>Get Top Posts from a Subreddit</h2>
-    <form id="top-posts-form">
-      <input type="text" id="subreddit-name" placeholder="Enter subreddit name (e.g., javascript)" required>
-      <button type="submit">Get Top Posts</button>
-    </form>
-    <div id="posts-container" class="hidden">
-      <h3>Top Posts</h3>
-      <div id="posts"></div>
     </div>
   </div>
   <script src="script.js"></script>

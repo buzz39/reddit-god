@@ -16,8 +16,23 @@ body {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 600px;
+  max-width: 1200px;
   text-align: center;
+  display: flex;
+.left-section, .right-section {
+  flex: 1;
+  text-align: center;
+}
+
+.left-section {
+  border-right: 1px solid #dddfe2;
+  padding-right: 1rem;
+}
+
+.right-section {
+  padding-left: 1rem;
+}
+  gap: 2rem;
 }
 
 h1 {
