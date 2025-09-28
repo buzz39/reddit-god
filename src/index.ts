@@ -7,6 +7,7 @@ import {
   selectTopSeeds,
   expandRecommendations,
   rankAndFormatResults,
+  RawSubreddit,
 } from './pipeline';
 
 dotenv.config();
@@ -16,7 +17,7 @@ export async function run(input: CopilotInput): Promise<CopilotOutput> {
   const { interests, options = {} } = input;
 
   const normalizedInterests = normalizeInterests(interests);
-  const allSeeds = [];
+  const allSeeds: RawSubreddit[] = [];
   const sources: string[] = [];
 
   for (const interest of normalizedInterests) {

@@ -1,20 +1,19 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
-import path from 'path';
 import { CopilotInput } from './pipeline';
 // @ts-ignore
 import { run } from './index';
 import { getTopPosts, getTopComments } from './reddit-api';
 
 const app = express();
-const port = 3000;
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static('public'));
 
 // API routes
 
-app.post('/api/subreddits', async (req, res) => {
+app.post('/api/subreddits', async (req: Request, res: Response) => {
   try {
     const input: CopilotInput = req.body;
     if (!input.interests || !Array.isArray(input.interests)) {
@@ -45,7 +44,7 @@ app.get('/api/subreddit/:name/top', async (req: Request, res: Response) => {
   }
 });
 
-app.get('/api/subreddit/:subreddit/comments/:postId', async (req, res) => {
+app.get('/api/subreddit/:subreddit/comments/:postId', async (req: Request, res: Response) => {
   try {
     const { subreddit, postId } = req.params;
     const comments = await getTopComments(subreddit, postId, 5);
