@@ -109,3 +109,16 @@ export async function getTopPosts(subreddit: string, limit: number = 5, time: st
     author: child.data.author,
   }));
 }
+
+export async function getTopComments(subreddit: string, postId: string, limit: number = 5) {
+  const result = await makeApiRequest(`/r/${subreddit}/comments/${postId}`);
+  const [_, comments] = result;
+  return comments.data.children
+    .sort((a: any, b: any) => b.data.score - a.data.score)
+    .slice(0, limit)
+    .map((comment: any) => ({
+      author: comment.data.author,
+      body: comment.data.body,
+      upvotes: comment.data.score,
+    }));
+}

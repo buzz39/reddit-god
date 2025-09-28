@@ -79,6 +79,6 @@ async function main() {
   }
 }
 
-main().catch(error => {
-  console.error('An unexpected error occurred:', error);
-});
+// main().catch(error => {
+//   console.error('An unexpected error occurred:', error);
+// });
