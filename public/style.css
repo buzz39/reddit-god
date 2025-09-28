@@ -37,6 +37,36 @@ p {
   gap: 1rem;
 }
 
+.filters {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.filter-group label {
+  font-size: 0.9rem;
+  color: #606770;
+  margin-bottom: 0.25rem;
+}
+
+.filter-group select,
+.filter-group input {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #dddfe2;
+  border-radius: 6px;
+  font-size: 1rem;
+  box-sizing: border-box; /* Ensures padding doesn't affect width */
+}
+
 #interests {
   padding: 0.8rem;
   border: 1px solid #dddfe2;

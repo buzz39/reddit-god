@@ -5,6 +5,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const resultsDiv = document.getElementById('results');
   const loadingDiv = document.getElementById('loading');
 
+  const nsfwSelect = document.getElementById('nsfw');
+  const minSubscribersInput = document.getElementById('min_subscribers');
+  const sortSelect = document.getElementById('sort');
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const interests = interestsInput.value.split(',').map(s => s.trim()).filter(Boolean);
@@ -13,6 +17,12 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('Please enter at least one interest.');
       return;
     }
+
+    const options = {
+      nsfw: nsfwSelect.value,
+      min_subscribers: parseInt(minSubscribersInput.value, 10),
+      sort: sortSelect.value,
+    };
 
     loadingDiv.classList.remove('hidden');
     resultsContainer.classList.add('hidden');
@@ -24,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ interests }),
+        body: JSON.stringify({ interests, options }),
       });
 
       if (!response.ok) {
