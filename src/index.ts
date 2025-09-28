@@ -17,31 +17,45 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
-// Get top posts for a subreddit
-app.get('/api/subreddit/:name/top', async (req, res) => {
-  const subreddit = req.params.name;
-  const time = req.query.time || 'day';
-  const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 5;
+// Get top posts for a subreddit (new endpoint matching frontend)
+app.get('/api/top-posts', async (req, res) => {
+  const { subreddit, time = 'day', limit = '5' } = req.query;
+
+  if (!subreddit || typeof subreddit !== 'string') {
+    return res.status(400).json({ error: 'Subreddit parameter is required' });
+  }
+
   try {
-    const posts = await getTopPosts(subreddit, limit, time as string);
+    console.log(`Fetching top posts for r/${subreddit}, time: ${time}, limit: ${limit}`);
+    const posts = await getTopPosts(subreddit, parseInt(limit as string, 10), time as string);
+    console.log(`Successfully fetched ${posts.length} posts`);
     res.status(200).json({ posts, subreddit });
   } catch (error) {
     console.error('Error fetching top posts:', error);
-    res.status(500).json({ error: 'Failed to fetch top posts.' });
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch top posts.';
+    res.status(500).json({ error: errorMessage });
   }
 });
 
-// Get top comments for a post
-app.get('/api/subreddit/:name/comments/:postId', async (req, res) => {
-  const subreddit = req.params.name;
-  const postId = req.params.postId;
-  const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 5;
+// Get top comments for a post (new endpoint matching frontend)
+app.get('/api/comments', async (req, res) => {
+  const { subreddit, postId, limit = '5' } = req.query;
+
+  if (!subreddit || typeof subreddit !== 'string') {
+    return res.status(400).json({ error: 'Subreddit parameter is required' });
+  }
+
+  if (!postId || typeof postId !== 'string') {
+    return res.status(400).json({ error: 'Post ID parameter is required' });
+  }
+
   try {
-    const comments = await getTopComments(subreddit, postId, limit);
+    const comments = await getTopComments(subreddit, postId, parseInt(limit as string, 10));
     res.status(200).json({ comments });
   } catch (error) {
     console.error('Error fetching top comments:', error);
-    res.status(500).json({ error: 'Failed to fetch top comments.' });
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch top comments.';
+    res.status(500).json({ error: errorMessage });
   }
 });
 
