@@ -66,11 +66,23 @@ async function makeApiRequest(endpoint: string, params: Record<string, any> = {}
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(`API Error for ${endpoint}:`, error.response?.status, error.response?.data);
+      const status = error.response?.status;
+      const data = error.response?.data;
+      console.error(`API Error for ${endpoint}:`, status, data);
+      
+      if (status === 403) {
+        throw new Error('Access forbidden - check subreddit name and permissions');
+      } else if (status === 404) {
+        throw new Error('Subreddit not found');
+      } else if (status === 429) {
+        throw new Error('Rate limit exceeded - please try again later');
+      } else {
+        throw new Error(`Reddit API error: ${status} - ${data?.message || 'Unknown error'}`);
+      }
     } else {
       console.error(`Unexpected error for ${endpoint}:`, error);
+      throw new Error(`Network error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
-    throw new Error(`Failed to fetch from Reddit API endpoint: ${endpoint}`);
   }
 }
 
@@ -96,18 +108,28 @@ export async function getRecommendations(srnames: string) {
 }
 
 export async function getTopPosts(subreddit: string, limit: number = 5, time: string = 'day') {
-  const result = await makeApiRequest(`/r/${subreddit}/top`, {
-    limit,
-    t: time,
-    sort: 'top',
-  });
-  return result.data.children.map((child: any) => ({
-    title: child.data.title,
-    upvotes: child.data.score,
-    url: child.data.url,
-    permalink: child.data.permalink,
-    author: child.data.author,
-  }));
+  try {
+    const result = await makeApiRequest(`/r/${subreddit}/top`, {
+      limit,
+      t: time,
+      sort: 'top',
+    });
+    
+    if (!result || !result.data || !result.data.children) {
+      throw new Error('Invalid response format from Reddit API');
+    }
+    
+    return result.data.children.map((child: any) => ({
+      title: child.data.title,
+      upvotes: child.data.score,
+      url: child.data.url,
+      permalink: child.data.permalink,
+      author: child.data.author,
+    }));
+  } catch (error) {
+    console.error(`Error fetching top posts for r/${subreddit}:`, error);
+    throw error;
+  }
 }
 
 export async function getTopComments(subreddit: string, postId: string, limit: number = 5) {

@@ -1,8 +1,8 @@
-
 import express from 'express';
 import path from 'path';
 import dotenv from 'dotenv';
 import { CopilotInput, CopilotOutput, normalizeInterests, discoverSeeds, selectTopSeeds, expandRecommendations, rankAndFormatResults, RawSubreddit } from './pipeline';
+import { getTopPosts, getTopComments } from './reddit-api';
 
 dotenv.config();
 
@@ -15,6 +15,34 @@ app.use(express.static(path.join(__dirname, '../public')));
 // Serve index.html at root
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
+});
+
+// Get top posts for a subreddit
+app.get('/api/subreddit/:name/top', async (req, res) => {
+  const subreddit = req.params.name;
+  const time = req.query.time || 'day';
+  const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 5;
+  try {
+    const posts = await getTopPosts(subreddit, limit, time as string);
+    res.status(200).json({ posts, subreddit });
+  } catch (error) {
+    console.error('Error fetching top posts:', error);
+    res.status(500).json({ error: 'Failed to fetch top posts.' });
+  }
+});
+
+// Get top comments for a post
+app.get('/api/subreddit/:name/comments/:postId', async (req, res) => {
+  const subreddit = req.params.name;
+  const postId = req.params.postId;
+  const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 5;
+  try {
+    const comments = await getTopComments(subreddit, postId, limit);
+    res.status(200).json({ comments });
+  } catch (error) {
+    console.error('Error fetching top comments:', error);
+    res.status(500).json({ error: 'Failed to fetch top comments.' });
+  }
 });
 
 app.post('/api/subreddits', async (req, res) => {

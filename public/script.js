@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       const time = timeSelect.value;
-      const response = await fetch(`/api/subreddit/${subreddit}/top?time=${time}`);
+      const response = await fetch(`/api/top-posts?subreddit=${subreddit}&time=${time}`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch posts.');
@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const postId = button.dataset.postId;
           if (!postId) return;
           try {
-            const response = await fetch(`/api/subreddit/${currentSubreddit}/comments/${postId}`);
+            const response = await fetch(`/api/comments?subreddit=${currentSubreddit}&postId=${postId}`);
             if (!response.ok) throw new Error('Failed to fetch comments');
             const data = await response.json();
             const commentsDiv = document.createElement('div');
