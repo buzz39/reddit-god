@@ -2,7 +2,7 @@
   "name": "reddit-copilot",
   "version": "1.0.0",
   "description": "Finds relevant subreddits for given interests using Reddit's API.",
-  "main": "dist/server.js",
+  "main": "src/index.ts",
   "scripts": {
     "start": "node dist/server.js",
     "build": "tsc",
