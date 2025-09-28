@@ -11,6 +11,8 @@ const port = 3000;
 app.use(cors());
 app.use(express.json());
 
+// Static files are handled by Vercel
+
 app.post('/api/subreddits', async (req, res) => {
   try {
     const input: CopilotInput = req.body;
@@ -54,8 +56,10 @@ app.get('/api/subreddit/:subreddit/comments/:postId', async (req, res) => {
   }
 });
 
-app.use(express.static('public'));
+// For Vercel deployment
+export default app;
 
-app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
-});
+// For local development (comment out for Vercel)
+// app.listen(port, () => {
+//   console.log(`Server is running at http://localhost:${port}`);
+// });
