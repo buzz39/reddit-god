@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reddit Copilot</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Reddit Copilot</h1>
+    <p>Find the best subreddits for your interests.</p>
+    <form id="interest-form">
+      <input type="text" id="interests" placeholder="Enter interests (e.g., fitness, javascript)" required>
+      <button type="submit">Find Subreddits</button>
+    </form>
+    <div id="results-container" class="hidden">
+      <h2>Results</h2>
+      <div id="results"></div>
+    </div>
+    <div id="loading" class="hidden">
+      <div class="spinner"></div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
