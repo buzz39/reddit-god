@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
 import { CopilotInput } from './pipeline';
 // @ts-ignore
 import { run } from './index';
@@ -11,7 +12,7 @@ const port = 3000;
 app.use(cors());
 app.use(express.json());
 
-// Static files are handled by Vercel
+// API routes
 
 app.post('/api/subreddits', async (req, res) => {
   try {
@@ -34,8 +35,8 @@ app.get('/api/subreddit/:name/top', async (req, res) => {
     if (!name) {
       return res.status(400).json({ error: 'Subreddit name is required.' });
     }
-    // Remove 'r/' prefix if present and lowercase
-    name = name.replace(/^r\//, '').toLowerCase();
+    // Remove 'r/' prefix if present
+    name = name.replace(/^r\//, '');
     const posts = await getTopPosts(name, 5, (time as string) || 'day');
     res.json({ subreddit: name, posts });
   } catch (error) {
@@ -47,8 +48,7 @@ app.get('/api/subreddit/:name/top', async (req, res) => {
 app.get('/api/subreddit/:subreddit/comments/:postId', async (req, res) => {
   try {
     const { subreddit, postId } = req.params;
-    const lowerSubreddit = subreddit.toLowerCase();
-    const comments = await getTopComments(lowerSubreddit, postId, 5);
+    const comments = await getTopComments(subreddit, postId, 5);
     res.json({ comments });
   } catch (error) {
     console.error('API Error:', error);
