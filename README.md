@@ -1,14 +1,20 @@
 # Reddit Copilot
 
-This project is a subreddit discovery tool that takes a list of interests and returns a ranked list of relevant subreddits using the Reddit API.
+Reddit Copilot is a web application that helps users discover relevant subreddits based on their interests and view top posts from selected subreddits with time-based filtering.
 
 ## Features
 
--   Fetches data from Reddit's API using OAuth2.
--   Discovers subreddits through search, autocomplete, and recommendations.
--   Scores and ranks results based on subscribers, activity, and text relevance.
--   Filters results by NSFW content and minimum subscriber count.
--   Provides output in both JSON and a human-readable format.
+-   **Web Interface**: Clean, responsive two-panel layout for easy navigation.
+-   **Subreddit Discovery** (Left Panel):
+    -   Searches for subreddits based on user interests.
+    -   Filters by NSFW content, minimum subscriber count, and sort options (hybrid, relevance, subscribers, activity).
+    -   Displays ranked results with subscriber counts and descriptions.
+-   **Top Posts Viewer** (Right Panel):
+    -   Retrieves top 5 posts from any subreddit.
+    -   Time filter options: past hour, day, week, month, year, or all time.
+    -   Shows post titles, upvotes, authors, and direct links.
+-   **Reddit API Integration**: Uses OAuth2 for secure API access.
+-   **Backend Processing**: Server-side logic for API calls and data processing.
 
 ## How to Run
 
@@ -27,19 +33,23 @@ This project is a subreddit discovery tool that takes a list of interests and re
     REDDIT_USER_AGENT=RedditCopilot/1.0.0
     ```
 
-3.  **Run the application:**
+3.  **Start the web server:**
 
     ```bash
-    pnpm dev
+    pnpm run dev
     ```
 
-    This will execute the `src/index.ts` file with a predefined example input. You can modify this file to test with different interests and options.
+    The server will start on `http://localhost:3000`. Open this URL in your browser to access the web interface.
 
 ## Project Structure
 
--   `src/index.ts`: The main entry point of the application.
--   `src/reddit-api.ts`: Handles all interactions with the Reddit API, including authentication.
+-   `src/server.ts`: Express server that serves the web interface and handles API requests.
+-   `src/index.ts`: Legacy CLI entry point for subreddit discovery.
+-   `src/reddit-api.ts`: Handles all interactions with the Reddit API, including authentication and data fetching.
 -   `src/pipeline.ts`: Contains the core logic for the subreddit discovery pipeline.
+-   `public/index.html`: Main web page with the two-panel interface.
+-   `public/script.js`: Client-side JavaScript for handling user interactions and API calls.
+-   `public/style.css`: Styles for the web interface.
 -   `package.json`: Defines the project's dependencies and scripts.
 -   `tsconfig.json`: TypeScript compiler configuration.
 -   `.env`: Stores the Reddit API credentials.
