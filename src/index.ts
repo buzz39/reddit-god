@@ -21,10 +21,15 @@ app.post('/api/subreddits', async (req, res) => {
   }
 });
 
+
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Express server listening on port ${port}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(port, () => {
+    console.log(`Express server listening on port ${port}`);
+  });
+}
+
+export default app;
 
 export async function run(input: CopilotInput): Promise<CopilotOutput> {
   const startTime = Date.now();
