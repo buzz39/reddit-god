@@ -1,0 +1,7 @@
+{
+  "name": "reddit-copilot",
+  "compatibility_date": "2025-09-28",
+  "assets": {
+    "directory": "./public"
+  }
+}
