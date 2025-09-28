@@ -1,4 +1,6 @@
+
 import express from 'express';
+import path from 'path';
 import dotenv from 'dotenv';
 import { CopilotInput, CopilotOutput, normalizeInterests, discoverSeeds, selectTopSeeds, expandRecommendations, rankAndFormatResults, RawSubreddit } from './pipeline';
 
@@ -6,6 +8,14 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
+
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, '../public')));
+
+// Serve index.html at root
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
+});
 
 app.post('/api/subreddits', async (req, res) => {
   try {
