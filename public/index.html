@@ -46,6 +46,19 @@
     <div class="right-section">
       <h2>Get Top 5 Posts from a Subreddit</h2>
       <form id="top-posts-form">
+        <div class="filters">
+          <div class="filter-group">
+            <label for="time">Time Period</label>
+            <select id="time">
+              <option value="hour">Past Hour</option>
+              <option value="day" selected>Past Day</option>
+              <option value="week">Past Week</option>
+              <option value="month">Past Month</option>
+              <option value="year">Past Year</option>
+              <option value="all">All Time</option>
+            </select>
+          </div>
+        </div>
         <input type="text" id="subreddit-name" placeholder="Enter subreddit name (e.g., javascript)" required>
         <button type="submit">Get Top Posts</button>
       </form>

@@ -95,10 +95,11 @@ export async function getRecommendations(srnames: string) {
   return makeApiRequest(`/api/recommend/sr/${srnames}`);
 }
 
-export async function getTopPosts(subreddit: string, limit: number = 5) {
+export async function getTopPosts(subreddit: string, limit: number = 5, time: string = 'day') {
   const result = await makeApiRequest(`/r/${subreddit}/top`, {
     limit,
-    t: 'all',
+    t: time,
+    sort: 'top',
   });
   return result.data.children.map((child: any) => ({
     title: child.data.title,

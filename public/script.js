@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const topPostsForm = document.getElementById('top-posts-form');
   const subredditInput = document.getElementById('subreddit-name');
+  const timeSelect = document.getElementById('time');
   const postsContainer = document.getElementById('posts-container');
   const postsDiv = document.getElementById('posts');
 
@@ -70,7 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
     postsDiv.innerHTML = '';
 
     try {
-      const response = await fetch(`/api/subreddit/${subreddit}/top`);
+      const time = timeSelect.value;
+      const response = await fetch(`/api/subreddit/${subreddit}/top?time=${time}`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch posts.');

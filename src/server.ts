@@ -29,12 +29,13 @@ app.post('/api/subreddits', async (req, res) => {
 app.get('/api/subreddit/:name/top', async (req, res) => {
   try {
     let { name } = req.params;
+    const { time } = req.query;
     if (!name) {
       return res.status(400).json({ error: 'Subreddit name is required.' });
     }
     // Remove 'r/' prefix if present
     name = name.replace(/^r\//, '');
-    const posts = await getTopPosts(name, 5);
+    const posts = await getTopPosts(name, 5, (time as string) || 'day');
     res.json({ subreddit: name, posts });
   } catch (error) {
     console.error('API Error:', error);
