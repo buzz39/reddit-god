@@ -1,16 +1,30 @@
+import express from 'express';
 import dotenv from 'dotenv';
-import {
-  CopilotInput,
-  CopilotOutput,
-  normalizeInterests,
-  discoverSeeds,
-  selectTopSeeds,
-  expandRecommendations,
-  rankAndFormatResults,
-  RawSubreddit,
-} from './pipeline';
+import { CopilotInput, CopilotOutput, normalizeInterests, discoverSeeds, selectTopSeeds, expandRecommendations, rankAndFormatResults, RawSubreddit } from './pipeline';
 
 dotenv.config();
+
+const app = express();
+app.use(express.json());
+
+app.post('/api/subreddits', async (req, res) => {
+  try {
+    const input: CopilotInput = req.body;
+    if (!input.interests || !Array.isArray(input.interests)) {
+      return res.status(400).json({ error: 'Invalid input: "interests" must be an array of strings.' });
+    }
+    const output = await run(input);
+    res.status(200).json(output);
+  } catch (error) {
+    console.error('API Error:', error);
+    res.status(500).json({ error: 'An internal server error occurred.' });
+  }
+});
+
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Express server listening on port ${port}`);
+});
 
 export async function run(input: CopilotInput): Promise<CopilotOutput> {
   const startTime = Date.now();
@@ -54,32 +68,3 @@ export async function run(input: CopilotInput): Promise<CopilotOutput> {
     },
   };
 }
-
-function printHumanReadable(output: CopilotOutput) {
-  console.log(`\nTop picks for: ${output.interests.join(', ')}`);
-  output.results.forEach(r => {
-    console.log(
-      `- r/${r.name} — ${r.description.split('\n')[0]} — ~${(r.subscribers / 1000).toFixed(0)}k subs`
-    );
-  });
-}
-
-async function main() {
-  console.log('--- Reddit Copilot ---');
-  const exampleInput: CopilotInput = {
-    interests: ['fitness', 'javascript', 'travel'],
-    options: { limit: 5, nsfw: 'exclude', min_subscribers: 5000 },
-  };
-
-  try {
-    const output = await run(exampleInput);
-    console.log(JSON.stringify(output, null, 2));
-    printHumanReadable(output);
-  } catch (error) {
-    console.error('Pipeline failed:', error);
-  }
-}
-
-// main().catch(error => {
-//   console.error('An unexpected error occurred:', error);
-// });
