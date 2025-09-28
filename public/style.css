@@ -31,7 +31,7 @@ p {
   margin-bottom: 2rem;
 }
 
-#interest-form {
+#interest-form, #top-posts-form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -67,7 +67,7 @@ p {
   box-sizing: border-box; /* Ensures padding doesn't affect width */
 }
 
-#interests {
+#interests, #subreddit-name {
   padding: 0.8rem;
   border: 1px solid #dddfe2;
   border-radius: 6px;
@@ -94,12 +94,12 @@ button:hover {
   display: none;
 }
 
-#results-container {
+#results-container, #posts-container {
   margin-top: 2rem;
   text-align: left;
 }
 
-.result-item {
+.result-item, .post-item {
   background-color: #f7f8fa;
   padding: 1rem;
   border: 1px solid #dddfe2;
@@ -107,11 +107,11 @@ button:hover {
   margin-bottom: 1rem;
 }
 
-.result-item h3 {
+.result-item h3, .post-item h4 {
   margin: 0 0 0.5rem;
 }
 
-.result-item p {
+.result-item p, .post-item p {
   margin: 0;
   color: #606770;
   font-size: 0.9rem;

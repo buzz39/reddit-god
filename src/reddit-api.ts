@@ -94,3 +94,17 @@ export async function autocompleteSubreddits(query: string, limit: number) {
 export async function getRecommendations(srnames: string) {
   return makeApiRequest(`/api/recommend/sr/${srnames}`);
 }
+
+export async function getTopPosts(subreddit: string, limit: number = 5) {
+  const result = await makeApiRequest(`/r/${subreddit}/top`, {
+    limit,
+    t: 'all',
+  });
+  return result.data.children.map((child: any) => ({
+    title: child.data.title,
+    upvotes: child.data.score,
+    url: child.data.url,
+    permalink: child.data.permalink,
+    author: child.data.author,
+  }));
+}

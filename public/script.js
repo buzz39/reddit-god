@@ -9,6 +9,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const minSubscribersInput = document.getElementById('min_subscribers');
   const sortSelect = document.getElementById('sort');
 
+  const topPostsForm = document.getElementById('top-posts-form');
+  const subredditInput = document.getElementById('subreddit-name');
+  const postsContainer = document.getElementById('posts-container');
+  const postsDiv = document.getElementById('posts');
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const interests = interestsInput.value.split(',').map(s => s.trim()).filter(Boolean);
@@ -51,6 +56,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  topPostsForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const subreddit = subredditInput.value.trim();
+
+    if (!subreddit) {
+      alert('Please enter a subreddit name.');
+      return;
+    }
+
+    loadingDiv.classList.remove('hidden');
+    postsContainer.classList.add('hidden');
+    postsDiv.innerHTML = '';
+
+    try {
+      const response = await fetch(`/api/subreddit/${subreddit}/top`);
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch posts.');
+      }
+
+      const data = await response.json();
+      displayPosts(data.posts);
+    } catch (error) {
+      console.error('Error:', error);
+      alert('An error occurred while fetching posts. Please try again.');
+    } finally {
+      loadingDiv.classList.add('hidden');
+    }
+  });
+
   function displayResults(results) {
     if (results.length === 0) {
       resultsDiv.innerHTML = '<p>No subreddits found for your interests.</p>';
@@ -67,5 +102,24 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
     resultsContainer.classList.remove('hidden');
+  }
+
+  function displayPosts(posts) {
+    if (posts.length === 0) {
+      postsDiv.innerHTML = '<p>No posts found.</p>';
+    } else {
+      posts.forEach(post => {
+        const item = document.createElement('div');
+        item.className = 'post-item';
+        item.innerHTML = `
+          <h4><a href="${post.url}" target="_blank">${post.title}</a></h4>
+          <p><strong>Upvotes:</strong> ${post.upvotes}</p>
+          <p><strong>Author:</strong> u/${post.author}</p>
+          <p><a href="https://www.reddit.com${post.permalink}" target="_blank">Comments</a></p>
+        `;
+        postsDiv.appendChild(item);
+      });
+    }
+    postsContainer.classList.remove('hidden');
   }
 });

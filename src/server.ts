@@ -3,6 +3,7 @@ import cors from 'cors';
 import { CopilotInput } from './pipeline';
 // @ts-ignore
 import { run } from './index';
+import { getTopPosts } from './reddit-api';
 
 const app = express();
 const port = 3000;
@@ -22,6 +23,22 @@ app.post('/api/subreddits', async (req, res) => {
   } catch (error) {
     console.error('API Error:', error);
     res.status(500).json({ error: 'An internal server error occurred.' });
+  }
+});
+
+app.get('/api/subreddit/:name/top', async (req, res) => {
+  try {
+    let { name } = req.params;
+    if (!name) {
+      return res.status(400).json({ error: 'Subreddit name is required.' });
+    }
+    // Remove 'r/' prefix if present
+    name = name.replace(/^r\//, '');
+    const posts = await getTopPosts(name, 5);
+    res.json({ subreddit: name, posts });
+  } catch (error) {
+    console.error('API Error:', error);
+    res.status(500).json({ error: 'Failed to fetch top posts.' });
   }
 });
 
