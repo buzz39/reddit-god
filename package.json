@@ -4,7 +4,7 @@
   "description": "Finds relevant subreddits for given interests using Reddit's API.",
   "main": "src/index.ts",
   "scripts": {
-    "start": "node dist/server.js",
+    "start": "node dist/index.js",
     "build": "tsc",
     "dev": "ts-node src/index.ts"
   },
@@ -16,6 +16,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@clerk/clerk-js": "^5.96.0",
     "axios": "^1.7.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

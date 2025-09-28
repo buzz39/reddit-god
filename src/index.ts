@@ -59,6 +59,74 @@ app.get('/api/comments', async (req, res) => {
   }
 });
 
+// User preferences storage (in-memory for demo)
+const userPreferences: Record<string, any> = {};
+
+// Clerk configuration endpoint
+app.get('/api/clerk-config', (req, res) => {
+  const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || process.env.CLERK_PUBLISHABLE_KEY;
+  
+  if (!publishableKey) {
+    return res.status(200).json({ 
+      publishableKey: null,
+      error: 'Clerk publishable key not configured. Check your environment variables.' 
+    });
+  }
+  
+  res.status(200).json({ 
+    publishableKey,
+    configured: true 
+  });
+});
+
+// User preferences endpoint
+app.get('/api/user-preferences', (req, res) => {
+  const { userId } = req.query;
+  
+  if (!userId || typeof userId !== 'string') {
+    return res.status(400).json({ error: 'User ID is required' });
+  }
+  
+  const preferences = userPreferences[userId] || {
+    favoriteSubreddits: [],
+    searchHistory: [],
+    defaultFilters: {
+      nsfw: 'exclude',
+      min_subscribers: 1000,
+      sort: 'hybrid',
+      time: 'day'
+    }
+  };
+  
+  res.status(200).json({ preferences });
+});
+
+app.post('/api/user-preferences', (req, res) => {
+  const { userId } = req.query;
+  const { preferences } = req.body;
+  
+  if (!userId || typeof userId !== 'string') {
+    return res.status(400).json({ error: 'User ID is required' });
+  }
+  
+  if (!preferences) {
+    return res.status(400).json({ error: 'Preferences data is required' });
+  }
+  
+  // Merge with existing preferences
+  const existingPrefs = userPreferences[userId] || {};
+  userPreferences[userId] = {
+    ...existingPrefs,
+    ...preferences,
+    lastUpdated: new Date().toISOString()
+  };
+  
+  res.status(200).json({ 
+    message: 'Preferences saved successfully',
+    preferences: userPreferences[userId]
+  });
+});
+
 app.post('/api/subreddits', async (req, res) => {
   try {
     const input: CopilotInput = req.body;

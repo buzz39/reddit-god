@@ -16,6 +16,115 @@ document.addEventListener('DOMContentLoaded', () => {
   const postsDiv = document.getElementById('posts');
 
   let currentSubreddit = '';
+  let userPreferences = null;
+
+  // Load user preferences when authenticated
+  async function loadUserPreferences() {
+    if (window.clerkAuth && window.clerkAuth.isSignedIn()) {
+      const userId = window.clerkAuth.getUserId();
+      try {
+        const response = await fetch(`/api/user-preferences?userId=${userId}`);
+        if (response.ok) {
+          const data = await response.json();
+          userPreferences = data.preferences;
+          applyUserPreferences();
+        }
+      } catch (error) {
+        console.error('Error loading user preferences:', error);
+      }
+    }
+  }
+
+  // Apply user preferences to form fields
+  function applyUserPreferences() {
+    if (userPreferences && userPreferences.defaultFilters) {
+      const filters = userPreferences.defaultFilters;
+      nsfwSelect.value = filters.nsfw || 'exclude';
+      minSubscribersInput.value = filters.min_subscribers || 1000;
+      sortSelect.value = filters.sort || 'hybrid';
+      timeSelect.value = filters.time || 'day';
+    }
+  }
+
+  // Save user preferences
+  async function saveUserPreferences(newPreferences) {
+    if (window.clerkAuth && window.clerkAuth.isSignedIn()) {
+      const userId = window.clerkAuth.getUserId();
+      try {
+        const response = await fetch(`/api/user-preferences?userId=${userId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ preferences: newPreferences }),
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          userPreferences = data.preferences;
+        }
+      } catch (error) {
+        console.error('Error saving user preferences:', error);
+      }
+    }
+  }
+
+  // Add to search history
+  function addToSearchHistory(interests) {
+    if (userPreferences) {
+      const searchHistory = userPreferences.searchHistory || [];
+      const newEntry = {
+        interests: interests,
+        timestamp: new Date().toISOString()
+      };
+      
+      // Add to beginning and limit to 10 recent searches
+      searchHistory.unshift(newEntry);
+      const updatedHistory = searchHistory.slice(0, 10);
+      
+      saveUserPreferences({
+        ...userPreferences,
+        searchHistory: updatedHistory
+      });
+    }
+  }
+
+  // Add to favorite subreddits
+  function addToFavorites(subredditName) {
+    if (userPreferences && window.clerkAuth.isSignedIn()) {
+      const favorites = userPreferences.favoriteSubreddits || [];
+      if (!favorites.includes(subredditName)) {
+        favorites.push(subredditName);
+        saveUserPreferences({
+          ...userPreferences,
+          favoriteSubreddits: favorites
+        });
+      }
+    }
+  }
+
+  // Save current filter settings as default
+  function saveCurrentFiltersAsDefault() {
+    if (window.clerkAuth && window.clerkAuth.isSignedIn()) {
+      const currentFilters = {
+        nsfw: nsfwSelect.value,
+        min_subscribers: parseInt(minSubscribersInput.value, 10),
+        sort: sortSelect.value,
+        time: timeSelect.value
+      };
+      
+      saveUserPreferences({
+        ...userPreferences,
+        defaultFilters: currentFilters
+      });
+    }
+  }
+
+  // Load preferences when page loads
+  setTimeout(loadUserPreferences, 1000); // Wait for auth to initialize
+
+  // Make addToFavorites available globally
+  window.addToFavorites = addToFavorites;
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -31,6 +140,12 @@ document.addEventListener('DOMContentLoaded', () => {
       min_subscribers: parseInt(minSubscribersInput.value, 10),
       sort: sortSelect.value,
     };
+
+    // Save search to history if user is signed in
+    if (window.clerkAuth && window.clerkAuth.isSignedIn()) {
+      addToSearchHistory(interests);
+      saveCurrentFiltersAsDefault();
+    }
 
     loadingDiv.classList.remove('hidden');
     resultsContainer.classList.add('hidden');
@@ -98,8 +213,16 @@ document.addEventListener('DOMContentLoaded', () => {
       results.forEach(sr => {
         const item = document.createElement('div');
         item.className = 'result-item';
+        
+        const favoriteButton = window.clerkAuth && window.clerkAuth.isSignedIn() 
+          ? `<button class="favorite-btn" onclick="addToFavorites('${sr.name}')" title="Add to favorites">⭐</button>`
+          : '';
+        
         item.innerHTML = `
-          <h3><a href="https://www.reddit.com/r/${sr.name}" target="_blank">r/${sr.name}</a></h3>
+          <div class="result-header">
+            <h3><a href="https://www.reddit.com/r/${sr.name}" target="_blank">r/${sr.name}</a></h3>
+            ${favoriteButton}
+          </div>
           <p><strong>Subscribers:</strong> ${sr.subscribers.toLocaleString()}</p>
           <p>${sr.description}</p>
         `;
