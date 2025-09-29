@@ -343,7 +343,7 @@ button:hover {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 #results-container, #posts-container {
