@@ -165,7 +165,7 @@ export async function run(input: CopilotInput): Promise<CopilotOutput> {
   }
   sources.push('subreddit_search', 'autocomplete');
 
-  const topSeeds = selectTopSeeds(allSeeds, normalizedInterests.join(' '), options);
+  const topSeeds = selectTopSeeds(allSeeds, normalizedInterests, options);
 
   const recommendations = await expandRecommendations(topSeeds);
   if (recommendations.length > 0) {

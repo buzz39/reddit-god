@@ -113,7 +113,7 @@ export async function discoverSeeds(
   return seeds;
 }
 
-function calculateSeedScore(seed: RawSubreddit, interest: string): number {
+export function calculateSeedScore(seed: RawSubreddit, interests: string[]): number {
   const subscriberWeight = Math.log10(seed.subscribers + 1);
   const activityWeight = seed.accounts_active ? Math.log10(seed.accounts_active + 1) : 0;
 
@@ -122,25 +122,28 @@ function calculateSeedScore(seed: RawSubreddit, interest: string): number {
   const name = seed.display_name.toLowerCase();
 
   let textMatch = 0;
-  if (title.includes(interest)) textMatch += 0.5;
-  if (name.includes(interest)) textMatch += 0.3;
-  if (description.includes(interest)) textMatch += 0.2;
+  for (const interest of interests) {
+    const lowerInterest = interest.toLowerCase();
+    if (title.includes(lowerInterest)) textMatch += 0.5;
+    if (name.includes(lowerInterest)) textMatch += 0.3;
+    if (description.includes(lowerInterest)) textMatch += 0.2;
 
-  // Simple BM25-lite: bonus for exact phrase match
-  if (title.split(/\s+/).includes(interest)) textMatch += 0.2;
-  if (name === interest) textMatch += 0.5;
+    // Simple BM25-lite: bonus for exact phrase match
+    if (title.split(/\s+/).includes(lowerInterest)) textMatch += 0.2;
+    if (name === lowerInterest) textMatch += 0.5;
+  }
 
   const score =
-    0.5 * textMatch +
-    0.3 * subscriberWeight +
-    0.2 * activityWeight;
+    0.8 * textMatch +
+    0.1 * subscriberWeight +
+    0.1 * activityWeight;
 
   return score;
 }
 
 export function selectTopSeeds(
   seeds: RawSubreddit[],
-  interest: string,
+  interests: string[],
   options: CopilotOptions
 ): RawSubreddit[] {
   const minSubscribers = options.min_subscribers ?? 1000;
@@ -149,7 +152,7 @@ export function selectTopSeeds(
 
   const scoredSeeds = seeds.map(seed => ({
     ...seed,
-    score: calculateSeedScore(seed, interest),
+    score: calculateSeedScore(seed, interests),
   }));
 
   const filteredSeeds = scoredSeeds.filter(seed => {
@@ -222,7 +225,7 @@ export function rankAndFormatResults(
   }
 
   const ranked = uniquePool.map(sr => {
-    const baseScore = calculateSeedScore(sr, interests.join(' '));
+    const baseScore = calculateSeedScore(sr, interests);
     let similarityBoost = 0;
     for (const interest of interests) {
       if (sr.display_name.toLowerCase().includes(interest) || sr.title.toLowerCase().includes(interest)) {
