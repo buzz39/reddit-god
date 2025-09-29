@@ -321,6 +321,10 @@ button[type="submit"]:hover {
     padding: 2rem;
 }
 
+#loading.hidden {
+    display: none !important;
+}
+
 .spinner {
     border: 4px solid rgba(0, 0, 0, 0.1);
     width: 36px;

@@ -35,6 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
       } finally {
         loadingDiv.classList.add('hidden');
       }
+    } else {
+      // Ensure spinner is hidden if user is not signed in
+      loadingDiv.classList.add('hidden');
     }
   }
 
@@ -123,6 +126,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Ensure spinner is initially hidden
+  loadingDiv.classList.add('hidden');
+  
   // Load preferences when page loads
   setTimeout(loadUserPreferences, 1000); // Wait for auth to initialize
 

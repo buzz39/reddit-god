@@ -2,7 +2,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   // Ensure correct initial state immediately
   setInitialState();
-  
+
   // Initialize auth after a small delay to ensure DOM is ready
   setTimeout(() => {
     initializeAuth();
@@ -15,32 +15,32 @@ let authEnabled = false;
 
 function setInitialState() {
   console.log('Setting initial authentication state...');
-  
+
   // Force login gate to show and main content to hide initially
   const loginGate = document.getElementById('login-gate');
   const mainContent = document.getElementById('main-content');
   const signedOut = document.getElementById('signed-out');
   const signedIn = document.getElementById('signed-in');
-  
+
   if (loginGate) {
     loginGate.classList.remove('hidden');
     loginGate.style.display = 'flex';
   }
-  
+
   if (mainContent) {
     mainContent.classList.add('hidden');
     mainContent.style.display = 'none';
   }
-  
+
   if (signedOut) signedOut.classList.remove('hidden');
   if (signedIn) signedIn.classList.add('hidden');
-  
+
   console.log('Initial state set: login gate visible, main content hidden');
 }
 
 async function initializeAuth() {
   console.log('Initializing authentication system...');
-  
+
   // First, try to fetch Clerk configuration
   let clerkConfig;
   try {
@@ -61,7 +61,7 @@ async function initializeAuth() {
   }
 
   console.log('Clerk configuration received, initializing with key...');
-  
+
   // Try to initialize Clerk with proper method
   try {
     await initializeClerkProperly(clerkConfig.publishableKey);
@@ -73,28 +73,28 @@ async function initializeAuth() {
 
 async function initializeClerkProperly(publishableKey) {
   console.log('Initializing Clerk with publishable key...');
-  
+
   try {
     // Load Clerk script with the publishable key set globally
     await loadClerkScript(publishableKey);
-    
+
     console.log('Checking Clerk availability...');
     console.log('window.Clerk:', window.Clerk);
     console.log('typeof window.Clerk:', typeof window.Clerk);
-    
+
     // Debug the Clerk object structure
     if (window.Clerk && typeof window.Clerk === 'object') {
       console.log('Clerk object properties:', Object.getOwnPropertyNames(window.Clerk));
       console.log('Clerk.user:', window.Clerk.user);
       console.log('Clerk methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(window.Clerk)));
     }
-    
+
     // Check if Clerk has auto-initialized - let's be less strict about the user property
     if (window.Clerk && typeof window.Clerk === 'object') {
       console.log('Clerk auto-initialized successfully! Using existing instance.');
       clerk = window.Clerk;
       authEnabled = true;
-      
+
       // Wait for Clerk to be fully ready
       try {
         console.log('Waiting for Clerk to be ready...');
@@ -103,11 +103,11 @@ async function initializeClerkProperly(publishableKey) {
       } catch (error) {
         console.log('Clerk load error (might be already loaded):', error.message);
       }
-      
+
       // Set up authentication state
       currentUser = clerk.user;
       console.log('Current user after load:', currentUser);
-      
+
       if (currentUser) {
         console.log('User is signed in:', currentUser.emailAddresses?.[0]?.emailAddress || 'No email');
         showSignedInState();
@@ -115,7 +115,7 @@ async function initializeClerkProperly(publishableKey) {
         console.log('User is not signed in');
         showSignedOutState();
       }
-      
+
       // Listen for auth changes
       try {
         clerk.addListener(({ user }) => {
@@ -131,25 +131,25 @@ async function initializeClerkProperly(publishableKey) {
       } catch (error) {
         console.error('Error adding auth listener:', error);
       }
-      
+
       // Set up event listeners
       setupEventListeners();
-      
+
     } else if (window.Clerk && typeof window.Clerk === 'function') {
       console.log('Found Clerk constructor, manual initialization required');
-      
+
       // Manual initialization
       clerk = new window.Clerk(publishableKey);
-      
+
       console.log('Loading Clerk...');
       await clerk.load();
-      
+
       console.log('Clerk loaded successfully!');
       authEnabled = true;
-      
+
       // Set up authentication state
       currentUser = clerk.user;
-      
+
       if (currentUser) {
         console.log('User is signed in:', currentUser.emailAddresses[0]?.emailAddress);
         showSignedInState();
@@ -157,7 +157,7 @@ async function initializeClerkProperly(publishableKey) {
         console.log('User is not signed in');
         showSignedOutState();
       }
-      
+
       // Listen for auth changes
       clerk.addListener(({ user }) => {
         console.log('Auth state changed:', user ? 'signed in' : 'signed out');
@@ -168,17 +168,17 @@ async function initializeClerkProperly(publishableKey) {
           showSignedOutState();
         }
       });
-      
+
       // Set up event listeners
       setupEventListeners();
-      
+
     } else {
       console.error('Clerk not available or in unexpected format');
       console.error('window.Clerk:', window.Clerk);
       console.error('Available window properties:', Object.keys(window).filter(key => key.toLowerCase().includes('clerk')));
       throw new Error('Clerk not available after loading');
     }
-    
+
   } catch (error) {
     console.error('Error initializing Clerk:', error);
     throw error;
@@ -193,18 +193,18 @@ function loadClerkScript(publishableKey) {
       resolve();
       return;
     }
-    
+
     console.log('Setting up Clerk environment...');
-    
+
     // Set the publishable key globally before loading Clerk
     // This prevents the auto-initialization error
     window.__clerk_publishable_key = publishableKey;
-    
+
     console.log('Loading Clerk script from CDN...');
     const script = document.createElement('script');
     script.src = 'https://unpkg.com/@clerk/clerk-js@5.96.0/dist/clerk.browser.js';
     script.async = true;
-    
+
     script.onload = () => {
       console.log('Clerk script loaded successfully');
       console.log('Available on window:', Object.keys(window).filter(key => key.toLowerCase().includes('clerk')));
@@ -213,12 +213,12 @@ function loadClerkScript(publishableKey) {
       // Give Clerk a moment to initialize
       setTimeout(resolve, 1000);
     };
-    
+
     script.onerror = (error) => {
       console.error('Failed to load Clerk script:', error);
       reject(new Error('Failed to load Clerk script'));
     };
-    
+
     document.head.appendChild(script);
   });
 }
@@ -230,14 +230,14 @@ function showMockAuthState() {
   // Show sign-in buttons but disable functionality
   const signedOut = document.getElementById('signed-out');
   const signedIn = document.getElementById('signed-in');
-  
+
   if (signedOut) signedOut.classList.remove('hidden');
   if (signedIn) signedIn.classList.add('hidden');
 
   // Add click handlers that show setup message
   const signInBtn = document.getElementById('sign-in-btn');
   const signUpBtn = document.getElementById('sign-up-btn');
-  
+
   if (signInBtn) signInBtn.addEventListener('click', showSetupMessage);
   if (signUpBtn) signUpBtn.addEventListener('click', showSetupMessage);
 }
@@ -248,14 +248,14 @@ function showSetupMessage() {
 
 function setupEventListeners() {
   console.log('Setting up authentication event listeners...');
-  
+
   // Header sign in button
   const signInBtn = document.getElementById('sign-in-btn');
   if (signInBtn) {
     // Remove existing listeners by cloning the element
     const newSignInBtn = signInBtn.cloneNode(true);
     signInBtn.parentNode.replaceChild(newSignInBtn, signInBtn);
-    
+
     newSignInBtn.addEventListener('click', openSignIn);
   }
 
@@ -265,7 +265,7 @@ function setupEventListeners() {
     // Remove existing listeners by cloning the element
     const newSignUpBtn = signUpBtn.cloneNode(true);
     signUpBtn.parentNode.replaceChild(newSignUpBtn, signUpBtn);
-    
+
     document.getElementById('sign-up-btn').addEventListener('click', openSignUp);
   }
 
