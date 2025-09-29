@@ -10,6 +10,45 @@ body {
   overflow: visible !important;
 }
 
+/* CRITICAL: Force main content to be hidden initially */
+#main-content,
+.main-content,
+body #main-content,
+html #main-content {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  position: absolute !important;
+  left: -9999px !important;
+}
+
+#main-content.show,
+.main-content.show,
+body #main-content.show,
+html #main-content.show {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: static !important;
+  left: auto !important;
+}
+
+#login-gate,
+.login-gate,
+body #login-gate,
+html #login-gate {
+  display: flex !important;
+  visibility: visible !important;
+}
+
+#login-gate.hidden,
+.login-gate.hidden,
+body #login-gate.hidden,
+html #login-gate.hidden {
+  display: none !important;
+  visibility: hidden !important;
+}
+
 /* Authentication Header */
 .auth-header {
   background-color: #1877f2 !important;
@@ -188,10 +227,23 @@ body {
 /* Main Content */
 .main-content {
   padding: 2rem;
-  display: flex;
+  display: none !important; /* Hidden by default with !important */
   justify-content: center;
   align-items: flex-start;
   min-height: calc(100vh - 100px);
+}
+
+.main-content.show {
+  display: flex !important;
+}
+
+/* Force initial state */
+#main-content {
+  display: none !important;
+}
+
+#main-content.show {
+  display: flex !important;
 }
 
 .container {

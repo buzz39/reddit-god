@@ -1,9 +1,42 @@
 // Initialize authentication system when DOM is ready
-document.addEventListener('DOMContentLoaded', initializeAuth);
+document.addEventListener('DOMContentLoaded', () => {
+  // Ensure correct initial state immediately
+  setInitialState();
+  
+  // Initialize auth after a small delay to ensure DOM is ready
+  setTimeout(() => {
+    initializeAuth();
+  }, 100);
+});
 
 let clerk = null;
 let currentUser = null;
 let authEnabled = false;
+
+function setInitialState() {
+  console.log('Setting initial authentication state...');
+  
+  // Force login gate to show and main content to hide initially
+  const loginGate = document.getElementById('login-gate');
+  const mainContent = document.getElementById('main-content');
+  const signedOut = document.getElementById('signed-out');
+  const signedIn = document.getElementById('signed-in');
+  
+  if (loginGate) {
+    loginGate.classList.remove('hidden');
+    loginGate.style.display = 'flex';
+  }
+  
+  if (mainContent) {
+    mainContent.classList.add('hidden');
+    mainContent.style.display = 'none';
+  }
+  
+  if (signedOut) signedOut.classList.remove('hidden');
+  if (signedIn) signedIn.classList.add('hidden');
+  
+  console.log('Initial state set: login gate visible, main content hidden');
+}
 
 async function initializeAuth() {
   console.log('Initializing authentication system...');
@@ -322,8 +355,15 @@ function showSignedInState() {
   if (signedIn) signedIn.classList.remove('hidden');
 
   // Show main content, hide login gate
-  if (loginGate) loginGate.classList.add('hidden');
-  if (mainContent) mainContent.classList.remove('hidden');
+  if (loginGate) {
+    loginGate.classList.add('hidden');
+    loginGate.style.display = 'none';
+  }
+  if (mainContent) {
+    mainContent.classList.remove('hidden');
+    mainContent.classList.add('show');
+    mainContent.style.display = 'flex';
+  }
 
   const greeting = document.getElementById('user-greeting');
   if (currentUser && greeting) {
@@ -344,8 +384,15 @@ function showSignedOutState() {
   if (signedOut) signedOut.classList.remove('hidden');
 
   // Show login gate, hide main content
-  if (loginGate) loginGate.classList.remove('hidden');
-  if (mainContent) mainContent.classList.add('hidden');
+  if (loginGate) {
+    loginGate.classList.remove('hidden');
+    loginGate.style.display = 'flex';
+  }
+  if (mainContent) {
+    mainContent.classList.add('hidden');
+    mainContent.classList.remove('show');
+    mainContent.style.display = 'none';
+  }
 }
 
 // Export functions for use in other scripts
