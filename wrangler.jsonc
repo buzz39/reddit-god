@@ -1,7 +1,11 @@
 {
   "name": "reddit-copilot",
   "compatibility_date": "2025-09-28",
+  "main": "src/index.ts",
   "assets": {
     "directory": "./public"
-  }
+  },
+  "compatibility_flags": [
+    "nodejs_compat"
+  ]
 }
