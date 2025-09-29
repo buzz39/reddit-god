@@ -5,14 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reddit Copilot</title>
-  <link rel="stylesheet" href="style.css?v=3">
-  <style>
-    /* Critical CSS to ensure login gate is shown */
-    #main-content { display: none !important; }
-    #login-gate { display: flex !important; }
-    .main-content { display: none !important; }
-    .login-gate { display: flex !important; }
-  </style>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -139,47 +133,8 @@
   <!-- Clerk Modals Container -->
   <div id="clerk-modal-container"></div>
 
-  <script>
-    // Immediate script to ensure correct initial state
-    (function() {
-      console.log('Immediate state enforcement running...');
-      
-      function enforceInitialState() {
-        const loginGate = document.getElementById('login-gate');
-        const mainContent = document.getElementById('main-content');
-        
-        if (loginGate) {
-          loginGate.style.display = 'flex';
-          loginGate.classList.remove('hidden');
-          console.log('Login gate forced visible');
-        }
-        
-        if (mainContent) {
-          mainContent.style.display = 'none';
-          mainContent.classList.add('hidden');
-          mainContent.classList.remove('show');
-          console.log('Main content forced hidden');
-        }
-      }
-      
-      // Run immediately
-      enforceInitialState();
-      
-      // Run when DOM is ready
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', enforceInitialState);
-      } else {
-        enforceInitialState();
-      }
-    })();
-  </script>
-  <script>
-    // Force initial state immediately
-    document.getElementById('main-content').style.display = 'none';
-    document.getElementById('login-gate').style.display = 'flex';
-  </script>
-  <script type="module" src="auth.js?v=3"></script>
-  <script src="script.js?v=3"></script>
+  <script type="module" src="auth.js"></script>
+  <script src="script.js"></script>
 </body>
 
 </html>
