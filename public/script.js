@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadUserPreferences() {
     if (window.clerkAuth && window.clerkAuth.isSignedIn()) {
       const userId = window.clerkAuth.getUserId();
+      loadingDiv.classList.remove('hidden');
       try {
         const response = await fetch(`/api/user-preferences?userId=${userId}`);
         if (response.ok) {
@@ -31,6 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       } catch (error) {
         console.error('Error loading user preferences:', error);
+      } finally {
+        loadingDiv.classList.add('hidden');
       }
     }
   }
@@ -256,6 +259,9 @@ document.addEventListener('DOMContentLoaded', () => {
           const button = e.target;
           const postId = button.dataset.postId;
           if (!postId) return;
+
+          loadingDiv.classList.remove('hidden');
+
           try {
             const response = await fetch(`/api/comments?subreddit=${currentSubreddit}&postId=${postId}`);
             if (!response.ok) throw new Error('Failed to fetch comments');
@@ -276,6 +282,8 @@ document.addEventListener('DOMContentLoaded', () => {
           } catch (error) {
             console.error(error);
             alert('Failed to load comments');
+          } finally {
+            loadingDiv.classList.add('hidden');
           }
         });
       });
